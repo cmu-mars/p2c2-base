@@ -1,3 +1,4 @@
 **
 !pkgs.rosinstall
 !turtletest
+!entrypoint.sh

@@ -1,24 +1,44 @@
-FROM cmu-mars/gazebo
+FROM ros:kinetic
 
+# create a "mars" user with sudo privileges
+# TODO: add tidying commands to shrink image size
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils && \
+    apt-get install -y sudo && \
+    useradd -ms /bin/bash mars && \
+    usermod -a -G sudo mars && \
+    sed -i "s/(ALL:ALL) ALL/(ALL) NOPASSWD: ALL/" "/etc/sudoers" && \
+    mkdir -p /home/mars
+USER mars
 ENV USER mars
+WORKDIR /home/mars
+
+RUN git config --global url.https://github.com/.insteadOf git://github.com/
+
+RUN sudo apt-get update \
+ && sudo apt-get install -y --no-install-recommends ros-kinetic-gazebo-ros-pkgs \
+                            ros-kinetic-gazebo-ros-control \
+                            ros-kinetic-kobuki-gazebo \
+                            apt-utils \
+                            xvfb \
+                            libignition-math2-dev \
+                            vim \
+                            wget \
+                            curl \
+                            python-catkin-tools
+
+###############################################################################
+
+# get a modified version of Gazebo that works on VMs
+RUN sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' \
+ && wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - \
+ && sudo apt-get update
+
 ENV ROS_WS /home/mars/catkin_ws
 WORKDIR ${ROS_WS}
 
-# trash the workspace
-RUN . /opt/ros/kinetic/setup.sh && \
-    catkin_make clean && \
-    rm -rf src/* build devel
-
-# install basic utilities
-RUN sudo apt-get update && \
-    sudo apt-get install -y vim wget curl python-catkin-tools
-
-# uninstall kobuki
-RUN sudo apt-get remove -y ros-kinetic-kobuki \
-                           ros-kinetic-kobuki-core
-
 # use a ROS install file to create a workspace
-ADD pkgs.rosinstall pkgs.rosinstall
+COPY pkgs.rosinstall pkgs.rosinstall
 RUN sudo chown -R ${USER} . && \
     wstool init -j8 src pkgs.rosinstall
 
@@ -47,6 +67,14 @@ RUN cd "${ROS_WS}/src/navigation" && \
 RUN sudo apt-get install -y libgazebo7-dev \
                             libignition-math2-dev \
                             ros-kinetic-gazebo-ros-control
+
+# get a modified version of Gazebo that works on VMs
+RUN sudo apt-get install -y libignition-math2-dev && \
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - && \
+    sudo apt-get update && \
+    sudo apt-get install -y gazebo7
+
 RUN mkdir logs
 # RUN . "/opt/ros/${ROS_DISTRO}/setup.sh" && \
 #     catkin build kobuki_gazebo_plugins
@@ -55,13 +83,17 @@ RUN . "/opt/ros/${ROS_DISTRO}/setup.sh" \
 
 RUN sudo apt-get update \
  && sudo apt-get install -y python3-pip \
- && pip3 install --upgrade pip
-RUN pip3 install --user \
+ && pip3 install --user \
       pyyaml \
       defusedxml \
       catkin_pkg \
       rospkg \
       netifaces
 
-COPY turtletest/ .
-RUN sudo chown -R $(whoami) turtletest
+# add the entrypoint script
+COPY turtletest/ turtletest/
+COPY entrypoint.sh .
+RUN sudo chown -R $(whoami) turtletest entrypoint.sh \
+ && chmod +x entrypoint.sh
+ENTRYPOINT ["/home/mars/catkin_ws/entrypoint.sh"]
+CMD ["/bin/bash"]
