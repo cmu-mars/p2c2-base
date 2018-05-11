@@ -13,7 +13,6 @@ def map_to_world(pos: Position2D) -> Position2D:
     return (world_x, world_y)
 
 
-# TODO: add distance threshold
 def build_mission(map_file: str,
                   world_file: str,
                   start_x: float,
@@ -48,8 +47,8 @@ if __name__ == '__main__':
 
     tests = {
         't1': build_mission(map_maze, world_maze, 0.0, 0.0, 2.0, 1.0),
-        't2': build_mission(map_maze, world_maze, 0.0, 0.0, 3.0, -1.0),
-        't3': build_mission(map_maze, world_maze, 0.0, 0.0, 0.0, -1.0)
+        't2': build_mission(map_maze, world_maze, 0.0, 0.0, 3.0, 0.0),
+        't3': build_mission(map_maze, world_maze, 0.0, 0.0, 1.0, 1.0)
     }
 
     if test_id not in tests:

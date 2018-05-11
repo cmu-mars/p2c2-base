@@ -4,6 +4,6 @@
 
 ```
 $ cd p2c2-base-image
-$ bugzoo source add cmu-mars .
+$ bugzoo source add mars .
 $ bugzoo bug install --force mars:base
 ```
