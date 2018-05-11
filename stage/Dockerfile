@@ -44,6 +44,16 @@ exec \"\$@\"" > "${ROS_WSPACE}/entrypoint.sh" \
 ENTRYPOINT ["/ros_ws/entrypoint.sh"]
 CMD ["/bin/bash"]
 
+RUN apt-get update \
+ && apt-get install -y software-properties-common \
+ && add-apt-repository ppa:deadsnakes/ppa \
+ && apt-get update \
+ && apt-get install -y python3.6
+RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
+ && python3.6 /tmp/get-pip.py
+RUN pip3.6 install pyyaml rospkg catkin_pkg netifaces
+
 ENV TURTLEBOT_STAGE_MAP_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/maze.yaml
 ENV TURTLEBOT_STAGE_WORLD_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/stage/maze.world
-COPY turtlebot_in_stage.launch .
+COPY _debug.launch .
+COPY turtletest turtletest
