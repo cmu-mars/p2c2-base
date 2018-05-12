@@ -58,10 +58,6 @@ ENV TURTLEBOT_STAGE_WORLD_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/m
 COPY _debug.launch .
 COPY turtletest/ turtletest/
 
-# gcovr
-RUN apt-get update \
- && apt-get install -y gcovr
-
-
+RUN pip install gcovr
 RUN apt-get update \
  && apt-get install -y sudo
