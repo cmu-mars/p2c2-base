@@ -2,28 +2,28 @@ version: '1.0'
 
 blueprints:
   - type: docker
-    tag: cmu-mars/cp2:base
+    tag: cmumars/cp2:base
     context: .
     file: Dockerfile
 
 bugs:
   - name: mars:base
-    image: cmu-mars/cp2:base
+    image: cmumars/cp2:base
     dataset: mars
-    source-location: /home/mars/catkin_ws
+    source-location: /ros_ws/src
     coverage:
       files-to-instrument: []
     languages:
     - cpp
     compiler:
       type: catkin
-      workspace: /home/mars/catkin_ws
+      workspace: /ros_ws
       time-limit: 120
     test-harness:
       type: simple
       time-limit: 60
-      context: /home/mars/catkin_ws/turtletest
-      command: python3 ./test.py __ID__
+      context: /ros_ws/turtletest
+      command: python3.6 /ros_ws/turtletest/test.py __ID__
       tests:
         - t1
         - t2

@@ -56,4 +56,12 @@ RUN pip3.6 install pyyaml rospkg catkin_pkg netifaces
 ENV TURTLEBOT_STAGE_MAP_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/maze.yaml
 ENV TURTLEBOT_STAGE_WORLD_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/stage/maze.world
 COPY _debug.launch .
-COPY turtletest turtletest
+COPY turtletest/ turtletest/
+
+# gcovr
+RUN apt-get update \
+ && apt-get install -y gcovr
+
+
+RUN apt-get update \
+ && apt-get install -y sudo
