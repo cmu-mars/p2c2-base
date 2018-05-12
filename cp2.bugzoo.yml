@@ -10,7 +10,7 @@ bugs:
   - name: mars:base
     image: cmumars/cp2:base
     dataset: mars
-    source-location: /ros_ws/src
+    source-location: /ros_ws
     coverage:
       files-to-instrument: []
     languages:
@@ -18,7 +18,7 @@ bugs:
     compiler:
       type: catkin
       workspace: /ros_ws
-      time-limit: 120
+      time-limit: 600
     test-harness:
       type: simple
       time-limit: 60
