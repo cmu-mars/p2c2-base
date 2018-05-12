@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     tests = {
         't1': build_mission(map_maze, world_maze, 0.0, 0.0, 2.0, 1.0),
-        't2': build_mission(map_maze, world_maze, 0.0, 0.0, 3.0, 0.0),
+        't2': build_mission(map_maze, world_maze, 0.0, 0.0, 3.0, 3.0),
         't3': build_mission(map_maze, world_maze, 0.0, 0.0, 1.0, 1.0)
     }
 
