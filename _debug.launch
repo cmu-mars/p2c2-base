@@ -5,6 +5,7 @@
   - move_base
   - static map
   - amcl
+  - rviz view
  -->
 <launch>
   <arg name="base"       default="$(optenv TURTLEBOT_BASE kobuki)"/>  <!-- create, rhoomba -->
@@ -33,7 +34,7 @@
           base_watchdog_timeout : time (s) after receiving the last command on cmd_vel before stopping the robot
         Args:
           -g : run in headless mode.
-  -->
+  --> 
   <node pkg="stage_ros" type="stageros" name="stageros" args="-g $(arg world_file)">
     <param name="base_watchdog_timeout" value="0.5"/>
     <remap from="odom" to="odom"/>
@@ -49,7 +50,7 @@
     <arg name="3d_sensor" value="$(arg 3d_sensor)" />
   </include>
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="false"/>
+    <param name="use_gui" value="true"/>
   </node>
 
   <!-- Command Velocity multiplexer -->

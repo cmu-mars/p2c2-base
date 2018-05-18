@@ -10,7 +10,6 @@ import rospy
 import roslaunch
 import actionlib
 import actionlib_msgs.msg
-import gazebo_msgs.msg
 import move_base_msgs.msg
 import kobuki_msgs.msg
 import move_base_msgs.msg
@@ -37,7 +36,8 @@ class Mission(object):
                  map_file: str,
                  world_file: str,
                  time_limit: datetime.timedelta,
-                 map_to_world: Callable[[helper.Position2D], helper.Position2D]
+                 map_to_world: Callable[[helper.Position2D], helper.Position2D],
+                 distance_threshold: float = 0.2
                  ) -> None:
         """
         Constructs a new mission.
@@ -64,6 +64,7 @@ class Mission(object):
         self.__base_launch_file = base_launch_file
         self.__map_position_initial = map_position_initial
         self.__expected_map_position_end = map_position_end
+        self.__distance_threshold = distance_threshold
 
     @property
     def world_file(self) -> str:
@@ -133,15 +134,20 @@ class Mission(object):
             point = odom.pose.pose.position
             return (point.x, point.y)
 
-        # FIXME assumes Gazebo
-        # FIXME assumes robot model name
         def get_world_position() -> helper.Position2D:
-            ROBOT_MODEL_NAME = 'mobile_base'
-            model_states = \
-                rospy.client.wait_for_message("/gazebo/model_states",
-                                              gazebo_msgs.msg.ModelStates,
-                                              timeout=1.0)
-            pose = model_states.pose[model_states.name.index(ROBOT_MODEL_NAME)]
+            odom = rospy.client.wait_for_message("/base_pose_ground_truth",
+                                                 nav_msgs.msg.Odometry,
+                                                 timeout=1.0)
+            pose = odom.pose.pose
+
+            # GAZEBO CODE:
+            # ROBOT_MODEL_NAME = 'mobile_base'
+            # model_states = \
+            #     rospy.client.wait_for_message("/gazebo/model_states",
+            #                                   gazebo_msgs.msg.ModelStates,
+            #                                   timeout=1.0)
+            # pose = model_states.pose[model_states.name.index(ROBOT_MODEL_NAME)]
+
             point = pose.position # type: geometry_msgs.msg.Point
             return (point.x, point.y)
 
@@ -196,11 +202,15 @@ class Mission(object):
             distance_to_goal = helper.euclidean(actual_world_position_end,
                                                 self.expected_world_position_end)
 
-            # TODO define sensible DISTANCE_THRESHOLD
-            DISTANCE_THRESHOLD = 0.1
+            rospy.loginfo("Final believed position: %s",
+                          actual_believed_position_end)
+            rospy.loginfo("Final ground-truth position: %s",
+                          actual_world_position_end)
+            rospy.loginfo("Distance to goal: %.2f units", distance_to_goal)
+
             if collided:
                 return outcome.Collision(time_elapsed, distance_to_goal)
-            if distance_to_goal < DISTANCE_THRESHOLD:
+            if distance_to_goal < self.__distance_threshold:
                 return outcome.GoalReached(time_elapsed, distance_to_goal)
 
             return outcome.GoalNotReached(time_elapsed, distance_to_goal)
