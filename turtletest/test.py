@@ -20,7 +20,7 @@ def build_mission(map_file: str,
                   end_x: float,
                   end_y: float,
                   base_launch_file: str = os.path.join(os.path.dirname(__file__), 'robotest.launch'),  # noqa: pycodestyle
-                  distance_threshold: float = 0.2
+                  distance_threshold: float = 0.3
                   ) -> Mission:
     pos_start = (start_x, start_y)
     pos_target = (end_x, end_y)
