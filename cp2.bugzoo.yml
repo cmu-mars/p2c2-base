@@ -13,8 +13,6 @@ bugs:
     source-location: /ros_ws
     coverage:
       files-to-instrument:
-        - src/navigation/map_server/src/main.cpp
-        - src/amcl/src/amcl_node.cpp
         - src/actionlib/test/add_two_ints_server.cpp
         - src/actionlib/test/server_goal_handle_destruction.cpp
         - src/actionlib/test/add_two_ints_client.cpp
