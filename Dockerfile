@@ -28,6 +28,10 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+# remove astra_camera from the catkin workspace
+# see: https://github.mit.edu/brass/cmu-robotics/issues/155
+RUN rm -rf src/astra_camera
+
 # build source code
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && catkin build
