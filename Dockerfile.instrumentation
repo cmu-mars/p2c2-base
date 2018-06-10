@@ -1,0 +1,13 @@
+# Provides cmumars/cp2:instrumentation
+#
+# This image is used to provide an instrumented version of baseline A,
+# in order to avoid the need to reinstrument the program for each
+# perturbation (which may take 10--20 minutes).
+#
+FROM cmumars/cp2:base
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
+ && catkin clean -y \
+ && catkin config --cmake-args \
+      -DCMAKE_CXX_FLAGS="--coverage" \
+      -DCMAKE_LD_FLAGS="--coverage" \
+ && catkin build
