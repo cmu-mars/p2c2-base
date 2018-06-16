@@ -36,6 +36,10 @@ RUN rm -rf src/astra_camera
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && catkin build
 
+# build tests
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
+ && catkin build --continue-on-failure --no-status --make-args tests || exit 0
+
 # add entrypoint
 ENV ROS_WSPACE /ros_ws
 WORKDIR "${ROS_WSPACE}"
@@ -52,16 +56,12 @@ RUN apt-get update \
  && apt-get install -y software-properties-common \
  && add-apt-repository ppa:deadsnakes/ppa \
  && apt-get update \
- && apt-get install -y python3.6
+ && apt-get install -y python3.6 sudo
 RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
  && python3.6 /tmp/get-pip.py
-RUN pip3.6 install pyyaml rospkg catkin_pkg netifaces
+RUN pip3.6 install pyyaml rospkg catkin_pkg netifaces gcovr
 
 ENV TURTLEBOT_STAGE_MAP_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/maze.yaml
 ENV TURTLEBOT_STAGE_WORLD_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/stage/maze.world
 COPY _debug.launch .
 COPY turtletest/ turtletest/
-
-RUN pip install gcovr
-RUN apt-get update \
- && apt-get install -y sudo
