@@ -11,3 +11,8 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
       -DCMAKE_CXX_FLAGS="--coverage" \
       -DCMAKE_LD_FLAGS="--coverage" \
  && catkin build
+RUN catkin build \
+      --continue-on-failure \
+      --no-status \
+      --make-args tests \
+    || exit 0
