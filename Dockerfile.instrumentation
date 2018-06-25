@@ -5,14 +5,20 @@
 # perturbation (which may take 10--20 minutes).
 #
 FROM cmumars/cp2:base
+# apply instrumentation
+COPY instrument /tmp/instrument
+RUN cd /tmp \
+ && ./instrument
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && catkin clean -y \
  && catkin config --cmake-args \
       -DCMAKE_CXX_FLAGS="--coverage" \
       -DCMAKE_LD_FLAGS="--coverage" \
- && catkin build
-RUN catkin build \
+ && catkin build --no-status \
+ && catkin build \
       --continue-on-failure \
       --no-status \
       --make-args tests \
     || exit 0
+# clear any existing coverage information
+RUN gcovr -d -r .
