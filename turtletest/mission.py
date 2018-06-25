@@ -5,6 +5,7 @@ import math
 import sys
 import time
 import os
+import signal
 
 import rospy
 import roslaunch
@@ -151,6 +152,12 @@ class Mission(object):
             point = pose.position # type: geometry_msgs.msg.Point
             return (point.x, point.y)
 
+        # attach signal handlers
+        def crash(signum, frame):
+            raise SystemExit
+        signal.signal(signal.SIGINT, crash)
+        signal.signal(signal.SIGTERM, crash)
+
         # TODO compute parameters
         launch_parameters = {}
         launch_file = launch.EphemeralLaunchFile(self.__base_launch_file,
@@ -216,4 +223,6 @@ class Mission(object):
             return outcome.GoalNotReached(time_elapsed, distance_to_goal)
 
         finally:
+            print("Shutting down...")
             launcher.shutdown()
+            print("KILLED THE LAUNCHER")
