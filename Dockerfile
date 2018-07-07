@@ -51,6 +51,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
 # build tests
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && catkin build -DENABLE_TESTS=ON --continue-on-failure --no-status --make-args tests || exit 0
+#RUN catkin build -DENABLE_TESTS=ON --no-status orocos_kdl
 
 # add entrypoint
 ENV ROS_WSPACE /ros_ws
