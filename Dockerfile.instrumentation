@@ -16,6 +16,7 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
       -DCMAKE_LD_FLAGS="--coverage" \
  && catkin build --no-status \
  && catkin build \
+      -DENABLE_TESTS=ON \
       --continue-on-failure \
       --no-status \
       --make-args tests \

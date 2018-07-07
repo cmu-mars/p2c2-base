@@ -32,13 +32,25 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
 # see: https://github.mit.edu/brass/cmu-robotics/issues/155
 RUN rm -rf src/astra_camera
 
+# install Bear
+RUN cd /tmp \
+ && wget https://github.com/rizsotto/Bear/archive/2.3.11.tar.gz \
+ && tar -xf 2.3.11.tar.gz \
+ && cd Bear-2.3.11 \
+ && mkdir build \
+ && cd build \
+ && cmake .. \
+ && make all \
+ && make install \
+ && rm -rf /tmp/*
+
 # build source code
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
- && catkin build
+ && bear catkin build
 
 # build tests
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
- && catkin build --continue-on-failure --no-status --make-args tests || exit 0
+ && catkin build -DENABLE_TESTS=ON --continue-on-failure --no-status --make-args tests || exit 0
 
 # add entrypoint
 ENV ROS_WSPACE /ros_ws
