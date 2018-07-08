@@ -48,10 +48,20 @@ RUN cd /tmp \
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && bear catkin build
 
+RUN apt-get update \
+ && apt-get install -y software-properties-common \
+ && add-apt-repository ppa:deadsnakes/ppa \
+ && apt-get update \
+ && apt-get install -y python3.6 sudo
+RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
+ && python3.6 /tmp/get-pip.py
+RUN pip3.6 install pyyaml rospkg catkin_pkg netifaces gcovr
+
 # build tests
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
- && catkin build -DENABLE_TESTS=ON --continue-on-failure --no-status --make-args tests || exit 0
-#RUN catkin build -DENABLE_TESTS=ON --no-status orocos_kdl
+ && catkin config --cmake-args -DENABLE_TESTS=ON \
+ && (catkin build --continue-on-failure --no-status --make-args tests || exit 0) \
+ && catkin build --no-status
 
 # add entrypoint
 ENV ROS_WSPACE /ros_ws
@@ -64,15 +74,6 @@ exec \"\$@\"" > "${ROS_WSPACE}/entrypoint.sh" \
  && chmod +x "${ROS_WSPACE}/entrypoint.sh"
 ENTRYPOINT ["/ros_ws/entrypoint.sh"]
 CMD ["/bin/bash"]
-
-RUN apt-get update \
- && apt-get install -y software-properties-common \
- && add-apt-repository ppa:deadsnakes/ppa \
- && apt-get update \
- && apt-get install -y python3.6 sudo
-RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
- && python3.6 /tmp/get-pip.py
-RUN pip3.6 install pyyaml rospkg catkin_pkg netifaces gcovr
 
 ENV TURTLEBOT_STAGE_MAP_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/maze.yaml
 ENV TURTLEBOT_STAGE_WORLD_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/stage/maze.world

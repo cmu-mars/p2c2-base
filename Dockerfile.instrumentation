@@ -12,14 +12,15 @@ RUN cd /tmp \
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
  && catkin clean -y \
  && catkin config --cmake-args \
+      -DENABLE_TESTS=ON \
       -DCMAKE_CXX_FLAGS="--coverage" \
       -DCMAKE_LD_FLAGS="--coverage" \
  && catkin build --no-status \
- && catkin build \
-      -DENABLE_TESTS=ON \
+ && (catkin build \
       --continue-on-failure \
       --no-status \
       --make-args tests \
-    || exit 0
+    || exit 0) \
+ && catkin build --no-status
 # clear any existing coverage information
 RUN gcovr -d -r .
