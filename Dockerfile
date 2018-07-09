@@ -81,5 +81,5 @@ COPY _debug.launch .
 COPY turtletest/ turtletest/
 
 # install Kaskara binaries
-COPY --from=squareslab/kaskara /opt/kaskara /opt/kaskara
+COPY --from=squareslab/kaskara:0.0.3 /opt/kaskara /opt/kaskara
 ENV PATH "/opt/kaskara/scripts:${PATH}"
