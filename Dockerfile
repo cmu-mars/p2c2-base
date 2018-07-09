@@ -79,3 +79,7 @@ ENV TURTLEBOT_STAGE_MAP_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/map
 ENV TURTLEBOT_STAGE_WORLD_FILE /ros_ws/src/turtlebot_simulator/turtlebot_stage/maps/stage/maze.world
 COPY _debug.launch .
 COPY turtletest/ turtletest/
+
+# install Kaskara binaries
+COPY --from=squareslab/kaskara /opt/kaskara /opt/kaskara
+ENV PATH "/opt/kaskara/scripts:${PATH}"
